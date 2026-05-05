@@ -26,7 +26,7 @@ test-structure:
         /bin/bash -c ' \
             set -euo pipefail; \
             echo "--- binary checks ---"; \
-            for b in bootc cloud-init netplan ufw chronyc snapd; do \
+            for b in bootc cloud-init netplan ufw chronyc snap; do \
                 command -v "$b" > /dev/null && echo "OK: $b" || { echo "MISSING: $b"; exit 1; }; \
             done; \
             echo "--- bootc layout ---"; \
