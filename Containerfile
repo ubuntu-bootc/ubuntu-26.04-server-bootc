@@ -1,16 +1,26 @@
-# Bring shared scripts into the build context
-FROM scratch AS ctx
-COPY shared/ /shared
+# Provides a pristine dpkg/apt database to restore in the system stage.
+FROM docker.io/library/ubuntu:26.04 AS dpkg-state
 
 # Ubuntu 26.04 server image — derives from the minimal bootc base.
-# Kernel, systemd-boot, dracut initramfs, bootc, and core userspace
-# are all inherited. This layer adds server-specific packages only.
 FROM ghcr.io/hanthor/ubuntu-26.04-bootc:latest AS system
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Recreate apt working directories wiped by bootc-rootfs.sh in the base image.
-RUN mkdir -p /var/lib/apt/lists/partial /var/lib/dpkg/updates /var/lib/dpkg/info /var/cache/apt/archives/partial
+# Restore the dpkg/apt database from the pristine ubuntu:26.04 stage.
+# The base image ran bootc-rootfs.sh which wiped /var; apt-get will not
+# work without a valid dpkg status and the supporting directory tree.
+RUN --mount=type=bind,from=dpkg-state,source=/var,target=/mnt/var \
+    cp -a /mnt/var/lib/dpkg /var/lib/ && \
+    mkdir -p \
+        /var/cache/apt/archives/partial \
+        /var/lib/apt/lists/partial \
+        /var/log/apt
+
+# Bring bootc-rootfs.sh into the build context so we can re-run it.
+FROM scratch AS ctx
+COPY shared/ /shared
+
+FROM system
 
 # Server packages: provisioning, networking, firewall, time sync, snaps.
 RUN --mount=type=tmpfs,dst=/tmp \
@@ -22,7 +32,6 @@ RUN --mount=type=tmpfs,dst=/tmp \
         snapd \
         ubuntu-server-minimal \
         ufw && \
-    # Enable server services
     systemctl enable --root / \
         chrony.service \
         cloud-init.service \
