@@ -2,7 +2,7 @@
 FROM docker.io/library/ubuntu:26.04 AS dpkg-state
 
 # Ubuntu 26.04 server image — derives from the minimal bootc base.
-FROM ghcr.io/hanthor/ubuntu-26.04-bootc:latest AS system
+FROM ghcr.io/ubuntu-bootc/ubuntu-26.04-bootc:latest AS system
 
 ENV DEBIAN_FRONTEND=noninteractive
 

@@ -3,7 +3,7 @@
 ## What this repo is
 
 Ubuntu 26.04 LTS **server** bootc image. Derives from
-[hanthor/ubuntu-26.04-bootc](https://github.com/hanthor/ubuntu-26.04-bootc)
+[hanthor/ubuntu-26.04-bootc](https://github.com/ubuntu-bootc/ubuntu-26.04-bootc)
 (the minimal base — kernel, systemd-boot, dracut, bootc, openssh, podman).
 This layer adds server-specific packages only.
 
@@ -13,7 +13,7 @@ ubuntu:26.04
     └── ubuntu-26.04-server-bootc  ← this repo
 ```
 
-Published to: `ghcr.io/hanthor/ubuntu-26.04-server-bootc:latest`
+Published to: `ghcr.io/ubuntu-bootc/ubuntu-26.04-server-bootc:latest`
 
 ## What this adds over the base
 
@@ -29,7 +29,7 @@ Published to: `ghcr.io/hanthor/ubuntu-26.04-server-bootc:latest`
 ## Repository map
 
 ```
-Containerfile          FROM ghcr.io/hanthor/ubuntu-26.04-bootc:latest + server pkgs
+Containerfile          FROM ghcr.io/ubuntu-bootc/ubuntu-26.04-bootc:latest + server pkgs
 Justfile               build, test-structure
 shared/
   bootc-rootfs.sh      Re-run after apt to wipe /var (inherited from base)
@@ -47,7 +47,7 @@ wipe `/var` again before the final image is committed.
 ## Deriving from this image
 
 ```dockerfile
-FROM ghcr.io/hanthor/ubuntu-26.04-server-bootc:latest
+FROM ghcr.io/ubuntu-bootc/ubuntu-26.04-server-bootc:latest
 
 RUN apt-get update && apt-get install -y my-server-package && apt-get clean
 # Re-run bootc-rootfs.sh after any apt installs that write to /var

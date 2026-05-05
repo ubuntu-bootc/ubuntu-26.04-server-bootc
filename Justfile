@@ -10,7 +10,7 @@ build:
         ${PODMAN_EXTRA_ARGS:-} \
         -f Containerfile \
         -t "{{image_name}}:{{image_tag}}" \
-        --label "org.opencontainers.image.source=https://github.com/hanthor/ubuntu-26.04-server-bootc" \
+        --label "org.opencontainers.image.source=https://github.com/ubuntu-bootc/ubuntu-26.04-server-bootc" \
         --label "org.opencontainers.image.description=Ubuntu 26.04 server bootc image" \
         .
 
