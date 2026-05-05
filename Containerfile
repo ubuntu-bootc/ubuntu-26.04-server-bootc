@@ -21,13 +21,16 @@ FROM system
 # Server packages: provisioning, networking, firewall, time sync, snaps.
 RUN --mount=type=tmpfs,dst=/tmp \
     apt-get update -y && \
-    apt-get install -y \
+    apt-get install -y --no-install-recommends \
         chrony \
         cloud-init \
         netplan.io \
         snapd \
         ubuntu-server-minimal \
         ufw && \
+    # kdump-tools (pulled in by ubuntu-server-minimal) fails postinst without dbus;
+    # remove it — crash dumps are not useful in a bootc image context.
+    apt-get remove -y kdump-tools 2>/dev/null || true && \
     systemctl enable --root / \
         chrony.service \
         cloud-init.service \
