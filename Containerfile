@@ -31,13 +31,13 @@ RUN --mount=type=tmpfs,dst=/tmp \
     # kdump-tools (pulled in by ubuntu-server-minimal) fails postinst without dbus;
     # remove it — crash dumps are not useful in a bootc image context.
     apt-get remove -y kdump-tools 2>/dev/null || true && \
+    systemctl enable --root / chrony.service ufw.service && \
+    # cloud-init units may not register until first boot; ignore if missing
     systemctl enable --root / \
-        chrony.service \
         cloud-init.service \
         cloud-init-local.service \
         cloud-config.service \
-        cloud-final.service \
-        ufw.service && \
+        cloud-final.service 2>/dev/null || true && \
     apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Re-run bootc-rootfs.sh to wipe /var (packages above wrote dpkg/apt state
