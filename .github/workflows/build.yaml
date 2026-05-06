@@ -38,10 +38,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir -p ~/.config/containers
+          sudo mkdir -p /etc/containers
           echo "${GITHUB_TOKEN}" | sudo podman login \
             -u "oauth2accesstoken" --password-stdin \
-            --authfile /etc/containers/auth.json ghcr.io
+            --authfile /root/.config/containers/auth.json ghcr.io
 
       - name: Build image
         run: sudo $(which just) build
@@ -55,7 +55,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           sudo podman push \
-            --authfile /etc/containers/auth.json \
+            --authfile /root/.config/containers/auth.json \
             "${IMAGE_NAME}:latest" \
             "${IMAGE_REGISTRY}/${IMAGE_NAME}:latest-${{ matrix.platform.arch }}"
 
@@ -63,7 +63,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           mkdir -p /tmp/digests
-          sudo skopeo inspect --authfile /etc/containers/auth.json --no-tags \
+          sudo skopeo inspect --authfile /root/.config/containers/auth.json --no-tags \
             "docker://${IMAGE_REGISTRY}/${IMAGE_NAME}:latest-${{ matrix.platform.arch }}" | \
             python3 -c "import json,sys; print(json.load(sys.stdin)['Digest'])" \
             > /tmp/digests/${{ matrix.platform.arch }}.txt
