@@ -37,7 +37,12 @@ COPY --from=builder /output/ /
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install bootc runtime dependencies
+# Install bootc runtime dependencies first (before running bootc container lint)
+RUN apt-get update -y && \
+    apt-get install -y --no-install-recommends \
+        libostree-1-1 \
+        libzstd1 && \
+    apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # Restore the dpkg/apt database from the pristine ubuntu:26.04 stage.
 # The bootc-rootfs.sh step (later) will wipe /var; apt-get will not
