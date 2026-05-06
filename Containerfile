@@ -33,9 +33,11 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
 FROM docker.io/library/ubuntu:26.04 AS system
 
 # Copy bootc binary from builder
-COPY --from=builder /output/usr/bin/bootc /usr/bin/bootc
+COPY --from=builder /output/ /
 
 ENV DEBIAN_FRONTEND=noninteractive
+
+# Install bootc runtime dependencies
 
 # Restore the dpkg/apt database from the pristine ubuntu:26.04 stage.
 # The bootc-rootfs.sh step (later) will wipe /var; apt-get will not
